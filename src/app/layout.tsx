@@ -15,9 +15,31 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Akshara Farmer Producer Company | Onion Seed Management Platform",
+  title: "Akshara Farmer Producer Company | Certified Seeds, Agri-Inputs & Produce Marketing",
   description:
-    "Enterprise agricultural operations platform for farmer records, certified onion seed production batches, and distribution tracking.",
+    "Akshara Farmer Producer Company (FPC) empowers 5,000+ farmers across 120+ villages with lab-certified high-yield seeds, bio-fertilizers, produce aggregation, direct mandi market linkage, and 24/7 agronomy advisory.",
+  keywords: [
+    "Akshara Farmer Producer Company",
+    "Akshara FPC",
+    "Certified Onion Seeds",
+    "Agriculture Company India",
+    "Farmer Producer Organization",
+    "FPC Seeds",
+    "Bio-Fertilizers",
+    "Produce Aggregation",
+    "Kisan Helpline",
+    "Nashik Agriculture FPC",
+  ],
+  authors: [{ name: "Akshara Farmer Producer Company Ltd." }],
+  openGraph: {
+    title: "Akshara Farmer Producer Company | Empowering Farmers, Enriching Agriculture",
+    description:
+      "Certified seeds, bio-nutrients, direct produce aggregation, and modern agronomic training for 5,000+ farmer members.",
+    url: "https://aksharafpc.org",
+    siteName: "Akshara Farmer Producer Company",
+    locale: "en_IN",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -25,9 +47,48 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Akshara Farmer Producer Company Ltd.",
+    alternateName: "Akshara FPC",
+    url: "https://aksharafpc.org",
+    logo: "https://aksharafpc.org/logo.png",
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+91-1800-889-2345",
+      contactType: "customer service",
+      areaServed: "IN",
+      availableLanguage: ["en", "hi", "mr"],
+    },
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Plot No. 42, Krishi Seva Kendra Complex, APMC Road",
+      addressLocality: "Niphad",
+      addressRegion: "Maharashtra",
+      postalCode: "422303",
+      addressCountry: "IN",
+    },
+    sameAs: [
+      "https://facebook.com",
+      "https://twitter.com",
+      "https://instagram.com",
+      "https://youtube.com",
+    ],
+  };
+
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable} h-full`}>
-      <body className="font-sans antialiased min-h-screen bg-slate-50 text-slate-900 selection:bg-emerald-500 selection:text-white">
+    <html
+      lang="en"
+      className={`${inter.variable} ${outfit.variable} h-full scroll-smooth`}
+    >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
+      <body className="font-sans antialiased min-h-screen bg-earth-50 text-stone-900 selection:bg-forest-600 selection:text-white">
         {children}
       </body>
     </html>

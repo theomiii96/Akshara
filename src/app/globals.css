@@ -4,13 +4,19 @@
 
 @layer base {
   :root {
-    --background: #f8fafc;
-    --foreground: #0f172a;
+    --background: #fdfbf7;
+    --foreground: #1c1917;
     --card: #ffffff;
-    --card-foreground: #0f172a;
-    --border: #e2e8f0;
+    --card-foreground: #1c1917;
+    --border: #e7e5e4;
     --primary: #15803d;
     --primary-foreground: #ffffff;
+    --accent: #d97706;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light;
   }
 }
 
@@ -19,40 +25,83 @@ body {
   background-color: var(--background);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* Custom subtle scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1ede4;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #a8a29e;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #15803d;
 }
 
-/* Glassmorphism utility */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+/* Agri decorative background patterns */
+.bg-leaf-pattern {
+  background-image: radial-gradient(rgba(21, 128, 61, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-soil-pattern {
+  background-color: #fdfbf7;
+  background-image: radial-gradient(#d6d3d1 0.75px, transparent 0.75px), radial-gradient(#e7e5e4 0.75px, #fdfbf7 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+}
+
+/* Glassmorphism utilities */
+.glass-light {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(231, 229, 228, 0.8);
+}
+
+.glass-emerald {
+  background: rgba(20, 83, 45, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .glass-dark {
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(21, 17, 13, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Agri Button & Badge Utilities */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-forest-700 hover:bg-forest-800 shadow-agri transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-forest-900 bg-white hover:bg-forest-50 border border-forest-200 shadow-sm transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
+}
+
+.btn-harvest {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-semibold text-white bg-harvest-600 hover:bg-harvest-700 shadow-gold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
+}
+
+/* Text glow & gradients */
+.text-gradient-forest {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-forest-800 via-forest-600 to-forest-700;
+}
+
+.text-gradient-harvest {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-harvest-600 via-amber-500 to-harvest-700;
 }
 
 /* Smooth badge glow effects */
@@ -76,7 +125,7 @@ body {
     opacity: 0.4;
   }
   50% {
-    transform: scale(1.15);
+    transform: scale(1.18);
     opacity: 0;
   }
 }

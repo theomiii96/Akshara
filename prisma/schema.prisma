@@ -9,108 +9,63 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ── Company Staff (Admin Login) ─────────────────────────────────────────────
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
   password  String
-  role      String   @default("ADMIN") // ADMIN, FIELD_OFFICER
+  role      String   @default("ADMIN") // ADMIN, STAFF
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Farmer {
-  id                        String                @id @default(cuid())
-  farmerId                  String                @unique // farmer_id e.g. AFPC-TF-0101
-  fullName                  String                // full_name
-  phone                     String                // phone
-  villageTown               String                // village_town
-  taluka                    String?
-  district                  String                // Nashik, Pune, Ahmednagar, Solapur
-
-  // Land & Cultivation Data
-  totalLandOwnedAcres       Float                 // total_land_owned_acres (e.g. 4.5)
-  onionCultivationAreaAcres Float                 // onion_cultivation_area_acres (e.g. 3.0)
-
-  // Seed Purchase Details
-  seedVarietyPurchased      String                // seed_variety_purchased (e.g. "N-2-4-1 (Garwa Selection)", "Fursungi Special Red")
-  quantityPurchasedKg       Float                 // quantity_purchased_kg (e.g. 15.0)
-  purchaseDate              DateTime              // purchase_date
-  batchNumber               String                // batch_number (e.g. "AK-N241-2025-04")
-
-  // Yield & Financial Metrics (Annual Mahiti / Reporting)
-  harvestYear               Int                   // harvest_year (e.g. 2025 / 2026)
-  totalSeedYieldKg          Float                 // total_seed_yield_kg (Harvest produced using company seeds)
-  grossIncomeInr            Float                 // gross_income_inr (Total revenue earned from harvest)
-  netProfitPerAcreInr       Float                 // net_profit_per_acre_inr (Calculated field)
-
-  // Tech Farmer Verification
-  isTechFarmerVerified      Boolean               @default(true) // Verified FPC seed buyer
-  customerCategory          String                @default("TECH_FARMER") // TECH_FARMER, PROGRESSIVE_COMMERCIAL
-  
-  // Agronomic metadata
-  soilType                  String?               @default("Medium Black Soil")
-  irrigationSource          String?               @default("Drip Irrigation")
-  registrationDate          DateTime              @default(now())
-  status                    String                @default("ACTIVE")
-  notes                     String?
-
-  // Relations
-  annualMahiti              AnnualHarvestMahiti[]
-  distributions             SeedDistribution[]
-  createdAt                 DateTime              @default(now())
-  updatedAt                 DateTime              @updatedAt
+// ── Farmer Accounts (Farmer Login) ─────────────────────────────────────────
+model FarmerAccount {
+  id        String      @id @default(cuid())
+  name      String
+  phone     String      @unique
+  village   String
+  district  String
+  password  String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  orders    SeedOrder[]
 }
 
-model AnnualHarvestMahiti {
-  id                  String   @id @default(cuid())
-  farmerId            String
-  farmer              Farmer   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
-  harvestYear         Int      // e.g. 2024, 2025, 2026
-  seedVariety         String   // N-2-4-1, Fursungi Special
-  quantityPurchasedKg Float
-  batchNumber         String
-  totalYieldKg        Float    // Total harvest produced in kg
-  grossIncomeInr      Float    // Gross revenue in INR
-  netProfitPerAcreInr Float    // Net profit per acre in INR
-  season              String   // Rabi, Late Kharif
-  createdAt           DateTime @default(now())
+// ── Seed Stock (Managed by Company) ────────────────────────────────────────
+model Seed {
+  id            String      @id @default(cuid())
+  name          String      // e.g. "Akshara Super Red Onion Seed"
+  variety       String      // e.g. "N-2-4-1 (Garwa Selection)"
+  category      String      @default("Onion") // Onion, Maize, Paddy, Vegetable etc.
+  description   String?
+  quantityKg    Float       // total available stock in kg
+  pricePerKg    Float       // INR per kg
+  minOrderKg    Float       @default(0.5)
+  maxOrderKg    Float       @default(25.0)
+  isActive      Boolean     @default(true)
+  imageUrl      String?
+  season        String?     // Rabi, Kharif, All Season
+  germinationPct Float?     // e.g. 92.0
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  orders        SeedOrder[]
 }
 
-model SeedBatch {
-  id               String             @id @default(cuid())
-  batchNumber      String             @unique // e.g. AK-N241-2025-04
-  varietyName      String             // e.g. N-2-4-1 (Garwa Selection), Fursungi Special Red, Bhima Super
-  seedClass        String             @default("Certified Class I") // Breeder, Foundation, Certified
-  harvestDate      DateTime
-  germinationRate  Float              // percentage, e.g. 91.5%
-  purityPercentage Float              // percentage, e.g. 99.4%
-  moistureContent  Float?             @default(6.2)
-  totalYieldKg     Float              // total seed yield produced in kg
-  stockAvailableKg Float              // currently remaining stock in kg
-  costPerKg        Float              // INR per kg (e.g. 2100)
-  qcStatus         String             @default("CERTIFIED") // PENDING, PASSED, CERTIFIED, REJECTED
-  qcInspector      String?            @default("Dr. Suresh Patil (Seed Quality Lab Nashik)")
-  qcCertificateNo  String?            // e.g. MSCA-NSK-2025-482
-  distributions    SeedDistribution[]
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-}
-
-model SeedDistribution {
-  id               String    @id @default(cuid())
-  distributionCode String    @unique // e.g. DIST-2026-001
-  farmerId         String
-  farmer           Farmer    @relation(fields: [farmerId], references: [id], onDelete: Cascade)
-  batchId          String
-  batch            SeedBatch @relation(fields: [batchId], references: [id], onDelete: Restrict)
-  quantityKg       Float
-  targetAcreage    Float
-  distributionDate DateTime  @default(now())
-  subsidyRatePct   Float     @default(0.0)
-  totalAmount      Float     // total payable INR
-  paymentStatus    String    @default("PAID")
-  season           String    // Rabi, Late Kharif, Kharif
-  notes            String?
-  createdAt        DateTime  @default(now())
+// ── Seed Orders (Placed by Farmers) ────────────────────────────────────────
+model SeedOrder {
+  id              String        @id @default(cuid())
+  orderCode       String        @unique
+  farmerAccountId String
+  farmer          FarmerAccount @relation(fields: [farmerAccountId], references: [id], onDelete: Cascade)
+  seedId          String
+  seed            Seed          @relation(fields: [seedId], references: [id], onDelete: Restrict)
+  quantityKg      Float
+  pricePerKg      Float         // snapshot at time of order
+  totalAmount     Float
+  status          String        @default("PENDING") // PENDING, CONFIRMED, DISPATCHED, DELIVERED
+  notes           String?
+  orderedAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
