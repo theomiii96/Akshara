@@ -1,8 +1,9 @@
-// API: Farmer login (phone + password)
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     const token = signToken({
       id: farmer.id,
-      email: farmer.phone, // reuse email field for phone
+      email: farmer.phone,
       name: farmer.name,
       role: "FARMER",
     });

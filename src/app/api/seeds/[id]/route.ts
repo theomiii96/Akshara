@@ -1,7 +1,8 @@
-// API: GET, PATCH, DELETE a specific seed by id (admin)
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -46,7 +47,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
     const user = await getCurrentUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // Soft delete (deactivate)
     await prisma.seed.update({ where: { id: params.id }, data: { isActive: false } });
     return NextResponse.json({ success: true });
   } catch (error: any) {

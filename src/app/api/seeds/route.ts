@@ -1,7 +1,8 @@
-// API: GET all seeds (public/farmer) + POST new seed (admin only)
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {

@@ -1,8 +1,9 @@
-// API: GET all orders (admin) + POST new order (farmer)
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 import { cookies } from "next/headers";
+
+export const dynamic = "force-dynamic";
 
 function generateOrderCode() {
   const now = new Date();
@@ -12,13 +13,11 @@ function generateOrderCode() {
 
 export async function GET(req: NextRequest) {
   try {
-    // Admin can see all orders, farmer can see their own
     const cookieStore = cookies();
     const token = cookieStore.get("akshara_token")?.value;
     const farmerToken = cookieStore.get("akshara_farmer_token")?.value;
 
     if (token) {
-      // Admin: get all orders with farmer and seed info
       const orders = await prisma.seedOrder.findMany({
         include: {
           farmer: { select: { name: true, phone: true, village: true, district: true } },
@@ -64,7 +63,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Seed ID and valid quantity required" }, { status: 400 });
     }
 
-    // Get seed with current stock
     const seed = await prisma.seed.findUnique({ where: { id: seedId } });
     if (!seed || !seed.isActive) {
       return NextResponse.json({ error: "Seed not available" }, { status: 404 });
@@ -85,7 +83,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Maximum order per booking is ${seed.maxOrderKg} kg` }, { status: 400 });
     }
 
-    // Atomic: create order + deduct stock in a transaction
     const [order] = await prisma.$transaction([
       prisma.seedOrder.create({
         data: {
